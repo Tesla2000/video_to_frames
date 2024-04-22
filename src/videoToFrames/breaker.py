@@ -62,7 +62,7 @@ class VideoToFrames:
 
     def _make_folder(self, path: Union[str, Path]) -> bool:
         try:
-            os.mkdir(path)
+            Path(path).mkdir(parents=True)
             return True
         except:
             return False
@@ -71,8 +71,10 @@ class VideoToFrames:
         self.logger.debug("Processing:")
         err = False
         for video_name in self.video_names:
+            if output_folder is None:
+                output_folder = video_name[0:-4]
 
-            if self._make_folder(path=video_name[0:-4] if output_folder is None else output_folder):
+            if self._make_folder(path=output_folder):
                 tic = time.process_time()
                 self.logger.debug(f"Breaking {os.path.basename(video_name)} to frames...")
                 cap = cv2.VideoCapture(video_name)
@@ -86,7 +88,7 @@ class VideoToFrames:
                     if not ret:
                         break
                     try:
-                        cv2.imwrite(f"{video_name[0:-4]}/_{counter}.{self.image_format}", frame)
+                        cv2.imwrite(f"{output_folder}/_{counter}.{self.image_format}", frame)
                         if self.verbose:
                             print(f"({counter}".ljust(max_shift), f"/ {frame_number})", end="\r", flush=True)
                             counter += 1

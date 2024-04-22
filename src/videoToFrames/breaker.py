@@ -12,7 +12,7 @@ import time
 class VideoToFrames:
     """A class for breaking a video to it's frames."""
 
-    def __init__(self, path=None, verbose=True, image_format="jpg") -> None:
+    def __init__(self, path: str = None, verbose: bool = True, image_format: str = "jpg") -> None:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(level=logging.DEBUG)
         formatter = logging.Formatter('%(name)s - %(levelname)s - %(asctime)s - %(message)s')
@@ -50,9 +50,9 @@ class VideoToFrames:
             for index, p in enumerate(os.listdir(self.base_dir)):
                 if os.path.isfile(os.path.join(self.base_dir, p)) and self._check_format(p):
                     self.video_names.append(os.path.join(self.base_dir, p))
-                    self.logger.debug(f"{index}-  {p}") 
+                    self.logger.debug(f"{index}-  {p}")
 
-    def _check_format(self, file_name) -> bool:
+    def _check_format(self, file_name: str) -> bool:
         file_name = file_name.lower()
         file_format = file_name.split(".")[-1]
         for format in self.video_format_list:
@@ -60,18 +60,18 @@ class VideoToFrames:
                 return True
         return False
 
-    def _make_folder(self, path) -> bool:
+    def _make_folder(self, path: Union[str, Path]) -> bool:
         try:
             os.mkdir(path)
             return True
         except:
             return False
 
-    def run_breaking(self, output_folder: Optional[Union[Path, str]] = None):
+    def run_breaking(self, output_folder: Optional[Union[Path, str]] = None) -> None:
         self.logger.debug("Processing:")
         err = False
         for video_name in self.video_names:
-            
+
             if self._make_folder(path=video_name[0:-4] if output_folder is None else output_folder):
                 tic = time.process_time()
                 self.logger.debug(f"Breaking {os.path.basename(video_name)} to frames...")
@@ -80,7 +80,7 @@ class VideoToFrames:
                     continue
                 frame_number = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
                 counter = 1
-                max_shift = len(str(frame_number))+1
+                max_shift = len(str(frame_number)) + 1
                 while True:
                     ret, frame = cap.read()
                     if not ret:
@@ -95,7 +95,7 @@ class VideoToFrames:
                         err = True
                         break
                 if self.verbose:
-                    print(f"\nTotal time: {int((time.process_time()-tic)*1000)} ms", end="\n", flush=False)
+                    print(f"\nTotal time: {int((time.process_time() - tic) * 1000)} ms", end="\n", flush=False)
                 cap.release()
                 cv2.destroyAllWindows()
                 if err:

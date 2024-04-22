@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import Union, Optional
+
 import cv2
 import os
 import logging
@@ -9,7 +12,7 @@ import time
 class VideoToFrames:
     """A class for breaking a video to it's frames."""
 
-    def __init__(self, path=None, verbose=True ,image_format="jpg") -> None:
+    def __init__(self, path=None, verbose=True, image_format="jpg") -> None:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(level=logging.DEBUG)
         formatter = logging.Formatter('%(name)s - %(levelname)s - %(asctime)s - %(message)s')
@@ -64,12 +67,12 @@ class VideoToFrames:
         except:
             return False
 
-    def run_breaking(self):
+    def run_breaking(self, output_folder: Optional[Union[Path, str]] = None):
         self.logger.debug("Processing:")
         err = False
         for video_name in self.video_names:
             
-            if self._make_folder(path=video_name[0:-4]):
+            if self._make_folder(path=video_name[0:-4] if output_folder is None else output_folder):
                 tic = time.process_time()
                 self.logger.debug(f"Breaking {os.path.basename(video_name)} to frames...")
                 cap = cv2.VideoCapture(video_name)
